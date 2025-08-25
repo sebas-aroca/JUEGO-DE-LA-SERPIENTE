@@ -1,0 +1,80 @@
+
+import turtle    # Para gráficos y animación
+import time      # Para controlar la velocidad del juego
+import random    # Para generar posiciones aleatorias de la comida
+
+delay = 0.07     # Velocidad del juego (menos = más rápido)
+score = 0        # Puntuación actual
+high_score = 0   # Mejor puntuación
+
+wn = turtle.Screen()
+wn.title("Juego de la Serpiente 🐍")  # Título con emoji
+wn.bgcolor("black")                   # Fondo negro
+wn.setup(width=600, height=600)       # Tamaño de la ventana
+wn.tracer(0)                          # Desactiva actualización automática
+
+tamaño_celda = 20  # Todas las posiciones son múltiplos de 20
+
+# Dibuja un tablero de ajedrez con dos tonos de verde
+for x in range(-280, 300, tamaño_celda):
+    for y in range(-280, 300, tamaño_celda):
+        # Alterna colores según la posición (patrón de ajedrez)
+        tablero.color(colores_cesped[((x//tamaño_celda)+(y//tamaño_celda)) % 2])
+
+# Cabeza de la serpiente (cuadrado naranja)
+head = turtle.Turtle()
+head.shape("square")
+head.color("orange")
+head.goto(0, 0)           # Posición inicial centrada
+head.direction = "stop"   # Inicialmente quieta
+
+# Comida (círculo rojo)
+food = turtle.Turtle()
+food.shape("circle")
+food.color("red")
+food.goto(0, 100)         # Posición inicial
+
+segments = []  # Lista que almacena los segmentos del cuerpo
+
+# Texto del marcador (puntuación)
+pen = turtle.Turtle()
+pen.color("yellow")
+pen.goto(0, 260)  # Posición en la parte superior
+
+def go_up():
+    if head.direction != "down":  # Evita movimiento contrario
+        head.direction = "up"
+
+# Funciones similares para otras direcciones...
+
+def move():
+    # Mueve la cabeza exactamente una celda (20px) en la dirección actual
+    if head.direction == "up":
+        head.sety(head.ycor() + tamaño_celda)
+    # ... otras direcciones
+
+wn.listen()
+wn.onkeypress(go_up, "Up")      # Flecha arriba
+wn.onkeypress(go_down, "Down")  # Flecha abajo
+# ... otras teclas
+
+if head.distance(food) < 20:  # Si la cabeza toca la comida
+    # Nueva posición aleatoria para la comida (en una celda de la cuadrícula)
+    food.goto(random.randrange(-280, 281, tamaño_celda), 
+              random.randrange(-280, 281, tamaño_celda))
+    
+    # Añade nuevo segmento con color cíclico
+    new_segment = turtle.Turtle()
+    index_color = len(segments) % len(colores_serpiente)
+    new_segment.color(colores_serpiente[index_color])
+    
+    segments.append(new_segment)  # Añade a la lista de segmentos
+    score += 10  # Aumenta puntuación
+
+# Mueve cada segmento a la posición del anterior
+for index in range(len(segments)-1, 0, -1):
+    segments[index].goto(segments[index-1].position())
+    
+# El primer segmento sigue a la cabeza
+if len(segments) > 0:
+    segments[0].goto(head.position())
